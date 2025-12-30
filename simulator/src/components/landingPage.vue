@@ -78,7 +78,7 @@ const features = [
           </div>
         </button>
 
-        <!-- Simulator CT -->
+        <!-- Simulator CTA -->
         <button
           @click="$emit('navigate', 'simulator')"
           class="group relative overflow-hidden bg-black text-white rounded-3xl p-10 text-left transition-all hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98]"
