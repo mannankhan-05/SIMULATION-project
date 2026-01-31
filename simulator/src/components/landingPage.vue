@@ -56,7 +56,7 @@ const features = [
       <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-32">
         <!-- Calculator CTA -->
         <button
-          @click="$emit('navigate', 'calculator')"
+          @click="this.$router.push('/simulation')"
           class="group relative overflow-hidden bg-white border border-black/10 rounded-3xl p-10 text-left transition-all hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98]"
         >
           <div
@@ -80,7 +80,7 @@ const features = [
 
         <!-- Simulator CTA -->
         <button
-          @click="$emit('navigate', 'simulator')"
+          @click="this.$router.push('/queue')"
           class="group relative overflow-hidden bg-black text-white rounded-3xl p-10 text-left transition-all hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98]"
         >
           <div
