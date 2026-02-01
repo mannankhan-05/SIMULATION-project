@@ -23,7 +23,9 @@
         <a href="/#/queue" class="hover:opacity-100 transition-opacity"
           >Queue Simulator</a
         >
-        <a href="#" class="hover:opacity-100 transition-opacity">About</a>
+        <a href="/#/hospital-workflow" class="hover:opacity-100 transition-opacity"
+          >Hospital Workflow</a
+        >
       </div>
     </div>
   </nav>

@@ -16,6 +16,11 @@ const routes = [
     name: "queue",
     component: () => import("../components/queueCalculator.vue"),
   },
+  {
+    path: "/hospital-workflow",
+    name: "hospitalWorkflow",
+    component: () => import("../components/hospitalWorkflow.vue"),
+  },
 ];
 
 const router = createRouter({

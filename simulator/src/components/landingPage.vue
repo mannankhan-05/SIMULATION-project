@@ -5,6 +5,7 @@ import {
   Database,
   History,
   Layout,
+  Activity,
 } from "lucide-vue-next";
 
 const features = [
@@ -53,7 +54,7 @@ const features = [
       </p>
 
       <!-- CTA Cards -->
-      <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-32">
+      <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-32">
         <!-- Calculator CTA -->
         <button
           @click="this.$router.push('/simulation')"
@@ -64,9 +65,9 @@ const features = [
           >
             <Calculator class="w-7 h-7" />
           </div>
-          <h2 class="text-3xl font-bold mb-4">Model Calculator</h2>
+          <h2 class="text-2xl font-bold mb-4">Model Calculator</h2>
           <p
-            class="text-[var(--muted-foreground)] text-lg mb-8 leading-relaxed"
+            class="text-[var(--muted-foreground)] text-base mb-8 leading-relaxed"
           >
             Compute exact steady-state measures (L, Lq, W, Wq) for standardized
             M/M/C and M/G/C models.
@@ -88,8 +89,8 @@ const features = [
           >
             <Layout class="w-7 h-7" />
           </div>
-          <h2 class="text-3xl font-bold mb-4">Queue Simulator</h2>
-          <p class="text-white/60 text-lg mb-8 leading-relaxed">
+          <h2 class="text-2xl font-bold mb-4">Queue Simulator</h2>
+          <p class="text-white/60 text-base mb-8 leading-relaxed">
             Observe stochastic entity flow with real-time logs and visual Gantt
             charts of server utilization.
           </p>
@@ -97,6 +98,28 @@ const features = [
             class="flex items-center gap-2 font-bold uppercase tracking-widest text-sm text-white"
           >
             Enter Simulation <PlayCircle class="w-4 h-4" />
+          </div>
+        </button>
+
+        <!-- Hospital Workflow CTA -->
+        <button
+          @click="this.$router.push('/hospital-workflow')"
+          class="group relative overflow-hidden bg-gradient-to-br from-red-500 to-red-700 text-white rounded-3xl p-10 text-left transition-all hover:shadow-2xl hover:-translate-y-1 active:scale-[0.98]"
+        >
+          <div
+            class="mb-8 w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-white group-hover:bg-white group-hover:text-red-600 transition-colors"
+          >
+            <Activity class="w-7 h-7" />
+          </div>
+          <h2 class="text-2xl font-bold mb-4">Hospital ER Workflow</h2>
+          <p class="text-white/70 text-base mb-8 leading-relaxed">
+            Visualize emergency ward patient flow from arrival to discharge
+            with queueing metrics.
+          </p>
+          <div
+            class="flex items-center gap-2 font-bold uppercase tracking-widest text-sm text-white"
+          >
+            View Workflow <PlayCircle class="w-4 h-4" />
           </div>
         </button>
       </div>
