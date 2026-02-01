@@ -123,24 +123,56 @@
         <div class="lg:col-span-3 space-y-6">
           <div
             v-if="activeTab === 'calculator'"
-            class="grid grid-cols-1 md:grid-cols-3 gap-4"
+            class="space-y-6"
           >
-            <div
-              v-for="(val, key) in results"
-              :key="key"
-              class="bg-[#0A0A0A] border border-white/5 rounded-xl p-4 flex flex-col justify-between group hover:border-blue-500/30 transition-all cursor-default"
-            >
-              <span
-                class="text-[10px] font-bold uppercase tracking-tighter text-slate-500"
-                >{{ key }}</span
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div
+                v-for="(val, key) in results"
+                :key="key"
+                class="bg-[#0A0A0A] border border-white/5 rounded-xl p-4 flex flex-col justify-between group hover:border-blue-500/30 transition-all cursor-default"
               >
-              <div class="flex items-baseline gap-2 mt-2">
-                <span class="text-2xl font-mono font-bold text-blue-400">{{
-                  formatValue(val)
-                }}</span>
-                <span class="text-xs text-slate-600">{{
-                  key.includes("Time") ? "sec" : "units"
-                }}</span>
+                <span
+                  class="text-[10px] font-bold uppercase tracking-tighter text-slate-500"
+                  >{{ key }}</span
+                >
+                <div class="flex items-baseline gap-2 mt-2">
+                  <span class="text-2xl font-mono font-bold text-blue-400">{{
+                    formatValue(val)
+                  }}</span>
+                  <span class="text-xs text-slate-600">{{
+                    key.includes("Time") ? "sec" : "units"
+                  }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formula Toggle Button -->
+            <div class="flex justify-center pt-4">
+              <button
+                @click="showFormulas = !showFormulas"
+                class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-blue-400 transition-all bg-white/5 hover:bg-white/10 px-5 py-2.5 rounded-full border border-white/5 hover:border-blue-500/30 shadow-lg"
+              >
+                <BookOpen class="w-3.5 h-3.5" />
+                {{ showFormulas ? 'Hide Formulas' : 'Show Formulas' }}
+              </button>
+            </div>
+
+            <!-- Formulas Section -->
+            <div
+              v-if="showFormulas"
+              class="bg-[#0A0A0A] border border-white/5 rounded-2xl p-8 animate-in fade-in slide-in-from-top-4 duration-300 shadow-sm"
+            >
+              <h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-8 flex items-center justify-center gap-2 border-b border-white/5 pb-4">
+                <Info class="w-3.5 h-3.5 text-blue-500" />
+                Mathematical Formulas ({{ config.model }})
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div v-for="(formula, name) in currentFormulas" :key="name" class="flex flex-col gap-3">
+                  <span class="text-[9px] font-bold uppercase tracking-widest text-slate-600 text-center">{{ name }}</span>
+                  <div class="bg-black/60 rounded-xl p-6 font-mono text-sm border border-white/10 text-blue-400/90 leading-relaxed shadow-xl flex items-center justify-center min-h-[90px] text-center">
+                    <div v-html="formula" class="w-full"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -207,7 +239,16 @@
                         ID
                       </th>
                       <th class="p-3 font-semibold border-b border-white/5">
-                        Interarrival
+                        Rand (A)
+                      </th>
+                      <th class="p-3 font-semibold border-b border-white/5">
+                        CP Lookup
+                      </th>
+                      <th class="p-3 font-semibold border-b border-white/5">
+                        CP
+                      </th>
+                      <th class="p-3 font-semibold border-b border-white/5">
+                        Poisson Arrival
                       </th>
                       <th class="p-3 font-semibold border-b border-white/5">
                         Arrival
@@ -238,7 +279,18 @@
                       <td class="p-3 font-mono text-slate-400">
                         #{{ row.id }}
                       </td>
-                      <td class="p-3">{{ row.interarrivalTime.toFixed(2) }}</td>
+                      <td class="p-3 text-slate-500">
+                        {{ row.randA.toFixed(4) }}
+                      </td>
+                      <td class="p-3 text-slate-500">
+                        {{ row.cpLookup.toFixed(4) }}
+                      </td>
+                      <td class="p-3 text-slate-500">
+                        {{ row.cp.toFixed(4) }}
+                      </td>
+                      <td class="p-3 font-bold text-blue-400">
+                        {{ row.interarrivalTime }}
+                      </td>
                       <td class="p-3">{{ row.arrivalTime.toFixed(2) }}</td>
                       <td class="p-3 text-blue-400">
                         {{ row.serviceTime.toFixed(2) }}
@@ -263,6 +315,36 @@
                 </table>
               </div>
             </div>
+
+            <!-- Simulation Formula Toggle Button -->
+            <div class="flex justify-center pt-8">
+              <button
+                @click="showSimFormulas = !showSimFormulas"
+                class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-blue-400 transition-all bg-white/5 hover:bg-white/10 px-5 py-3 rounded-full border border-white/5 hover:border-blue-500/30 shadow-lg"
+              >
+                <BookOpen class="w-3.5 h-3.5" />
+                {{ showSimFormulas ? 'Hide Simulation Formulas' : 'Show Simulation Formulas' }}
+              </button>
+            </div>
+
+            <!-- Simulation Formulas Section -->
+            <div
+              v-if="showSimFormulas"
+              class="bg-[#0A0A0A] border border-white/5 rounded-2xl p-8 mt-8 animate-in fade-in slide-in-from-top-4 duration-300 shadow-sm"
+            >
+              <h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-8 flex items-center justify-center gap-2 border-b border-white/5 pb-4">
+                <Info class="w-3.5 h-3.5 text-blue-500" />
+                Simulation Step Formulas
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div v-for="(formula, name) in simFormulas" :key="name" class="flex flex-col gap-3">
+                  <span class="text-[9px] font-bold uppercase tracking-widest text-slate-600 text-center">{{ name }}</span>
+                  <div class="bg-black/60 rounded-xl p-6 font-mono text-sm border border-white/10 text-blue-400/90 leading-relaxed shadow-xl flex items-center justify-center min-h-[90px] text-center">
+                    <div v-html="formula" class="w-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -271,10 +353,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
-import { Play } from "lucide-vue-next";
+import { ref, reactive, onMounted, computed } from "vue";
+import { Play, BookOpen, Info } from "lucide-vue-next";
 
 const activeTab = ref("calculator");
+const showFormulas = ref(false);
+const showSimFormulas = ref(false);
 const config = reactive({
   model: "MM1",
   arrivalRate: 2.0,
@@ -305,6 +389,54 @@ const tabClass = (tab) => {
 
 const formatValue = (v) => Number(v).toFixed(3);
 
+const currentFormulas = computed(() => {
+  const models = {
+    MM1: {
+      "Traffic Intensity (ρ)": "ρ = λ / μ",
+      "Avg. Customers (L)": "L = λ / (μ - λ)",
+      "Avg. in Queue (Lq)": "Lq = λ² / (μ(μ - λ))",
+      "Time in System (W)": "W = 1 / (μ - λ)",
+      "Time in Queue (Wq)": "Wq = λ / (μ(μ - λ))",
+      "Prob. of Idle (P0)": "P₀ = 1 - ρ"
+    },
+    MMC: {
+      "Traffic Intensity (ρ)": "ρ = λ / (c * μ)",
+      "Prob. of Idle (P0)": "P₀ = [Σ (λ/μ)ⁿ/n! + (λ/μ)ᶜ / (c!(1-ρ))]⁻¹",
+      "Avg. in Queue (Lq)": "Lq = (P₀(λ/μ)ᶜρ) / (c!(1-ρ)²)",
+      "Time in Queue (Wq)": "Wq = Lq / λ",
+      "Time in System (W)": "W = Wq + 1/μ",
+      "Avg. Customers (L)": "L = λ * W"
+    },
+    MG1: {
+      "Formula Type": "Pollaczek-Khinchine (P-K)",
+      "Traffic Intensity (ρ)": "ρ = λ / μ",
+      "Avg. in Queue (Lq)": "Lq = (λ²σ² + ρ²) / (2(1-ρ))",
+      "Time in Queue (Wq)": "Wq = Lq / λ",
+      "Time in System (W)": "W = Wq + 1/μ",
+      "Avg. Customers (L)": "L = λ * W"
+    },
+    MGC: {
+      "Formula Type": "Kingman's Approximation",
+      "Traffic Intensity (ρ)": "ρ = λ / (c * μ)",
+      "Time in Queue (Wq)": "Wq(M/G/c) ≈ Wq(M/M/c) * (1 + Cₛ²)/2",
+      "Variation Coeff (Cs)": "Cₛ = σ / (1/μ)",
+      "Time in System (W)": "W = Wq + 1/μ",
+      "Avg. Customers (L)": "L = λ * W"
+    }
+  };
+  return models[config.model];
+});
+
+const simFormulas = {
+  "Interarrival (Tₐ)": "Tₐ = selected k from Poisson table based on Rand(A)",
+  "Arrival Time (Aᵢ)": "Aᵢ = Aᵢ₋₁ + Tₐ,ᵢ",
+  "Service Time (Sᵢ)": "Sᵢ = -ln(Rₛ) / μ (Exponential)",
+  "Start Time (Sₜ,ᵢ)": "Sₜ,ᵢ = max(Aᵢ, Eₜ,ᵢ₋₁)",
+  "End Time (Eₜ,ᵢ)": "Eₜ,ᵢ = Sₜ,ᵢ + Sᵢ",
+  "Wait Time (Wᵢ)": "Wᵢ = Sₜ,ᵢ - Aᵢ",
+  "Turnaround Time (Trᵢ)": "Trᵢ = Eₜ,ᵢ - Aᵢ"
+};
+
 const runCalculations = () => {
   const L = config.arrivalRate;
   const M = config.serviceRate;
@@ -334,13 +466,43 @@ const runCalculations = () => {
   }
 };
 
+const generatePoissonTable = (lambda) => {
+  const table = [];
+  let cp = 0;
+  let k = 0;
+  
+  // Poisson: P(k) = (lambda^k * e^-lambda) / k!
+  // We use the iterative relation: P(k) = P(k-1) * lambda / k
+  let p = Math.exp(-lambda);
+  
+  while (cp < 0.999 && k < 50) { // Safety cutoff
+    const lookupStart = k === 0 ? 0 : table[k - 1].cp;
+    cp += p;
+    table.push({
+      k,
+      p,
+      cp,
+      lookupStart,
+      lookupEnd: cp
+    });
+    k++;
+    p = (p * lambda) / k;
+  }
+  return table;
+};
+
 const runSimulation = () => {
   const table = [];
   let currentTime = 0;
   let currentArrival = 0;
+  const poissonTable = generatePoissonTable(config.arrivalRate);
 
   for (let i = 1; i <= 15; i++) {
-    const interarrival = -Math.log(Math.random()) / config.arrivalRate;
+    const randA = Math.random();
+    // Lookup interarrival k in poissonTable
+    const entry = poissonTable.find(e => randA >= e.lookupStart && randA < e.lookupEnd) || poissonTable[poissonTable.length - 1];
+    const interarrival = entry.k;
+    
     currentArrival += interarrival;
     const service = -Math.log(Math.random()) / config.serviceRate;
 
@@ -351,6 +513,9 @@ const runSimulation = () => {
 
     table.push({
       id: i,
+      randA: randA,
+      cpLookup: entry.lookupStart,
+      cp: entry.cp,
       interarrivalTime: interarrival,
       arrivalTime: currentArrival,
       serviceTime: service,

@@ -113,27 +113,59 @@
 
         <!-- Output Section -->
         <div class="lg:col-span-8 space-y-6">
-          <div v-if="results" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div
-              v-for="(val, key) in results"
-              :key="key"
-              class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:border-indigo-200 transition-colors"
-            >
-              <div>
-                <p
-                  class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1"
-                >
-                  {{ val.label }}
+          <div v-if="results" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div
+                v-for="(val, key) in results"
+                :key="key"
+                class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:border-indigo-200 transition-colors"
+              >
+                <div>
+                  <p
+                    class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1"
+                  >
+                    {{ val.label }}
+                  </p>
+                  <p class="text-sm text-slate-500 mb-2">{{ val.description }}</p>
+                </div>
+                <p class="text-3xl font-bold text-slate-900 tabular-nums">
+                  {{
+                    typeof val.value === "number"
+                      ? val.value.toFixed(4)
+                      : val.value
+                  }}
                 </p>
-                <p class="text-sm text-slate-500 mb-2">{{ val.description }}</p>
               </div>
-              <p class="text-3xl font-bold text-slate-900 tabular-nums">
-                {{
-                  typeof val.value === "number"
-                    ? val.value.toFixed(4)
-                    : val.value
-                }}
-              </p>
+            </div>
+
+            <!-- Formula Toggle Button -->
+            <div class="flex justify-center pt-4">
+              <button
+                @click="showFormulas = !showFormulas"
+                class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-indigo-600 transition-all bg-white hover:bg-slate-50 px-6 py-3 rounded-full border border-slate-200 hover:border-indigo-300 shadow-sm"
+              >
+                <BookOpen :size="14" />
+                {{ showFormulas ? 'Hide Formulas' : 'Show Formulas' }}
+              </button>
+            </div>
+
+            <!-- Formulas Section -->
+            <div
+              v-if="showFormulas"
+              class="bg-white border border-slate-200 rounded-2xl p-8 animate-in fade-in slide-in-from-top-4 duration-300 shadow-sm"
+            >
+              <h3 class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-8 flex items-center justify-center gap-2 border-b border-slate-100 pb-4">
+                <Info :size="14" class="text-indigo-500" />
+                Mathematical Formulas ({{ form.modelType }})
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div v-for="(formula, name) in currentFormulas" :key="name" class="flex flex-col gap-3">
+                  <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 text-center">{{ name }}</span>
+                  <div class="bg-slate-50 rounded-xl p-6 font-mono text-sm border border-slate-100 text-indigo-600 leading-relaxed shadow-inner flex items-center justify-center min-h-[90px] text-center">
+                    <div v-html="formula"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -151,16 +183,18 @@
 </template>
 
 <script setup>
-import { ref, reactive, onUnmounted } from "vue";
+import { ref, reactive, onUnmounted, computed } from "vue";
 import {
   // Activity,
   Settings2,
   Info,
   Calculator,
   Play,
+  BookOpen,
 } from "lucide-vue-next";
 
 const results = ref(null);
+const showFormulas = ref(false);
 
 // Calculator Form
 const form = reactive({
@@ -172,6 +206,44 @@ const form = reactive({
 });
 
 let simInterval = null;
+
+const currentFormulas = computed(() => {
+  const models = {
+    MM1: {
+      "Traffic Intensity (ρ)": "ρ = λ / μ",
+      "Avg. Customers (L)": "L = λ / (μ - λ)",
+      "Avg. in Queue (Lq)": "Lq = λ² / (μ(μ - λ))",
+      "Time in System (W)": "W = 1 / (μ - λ)",
+      "Time in Queue (Wq)": "Wq = λ / (μ(μ - λ))",
+      "Prob. of Idle (P0)": "P₀ = 1 - ρ"
+    },
+    MMC: {
+      "Traffic Intensity (ρ)": "ρ = λ / (c * μ)",
+      "Prob. of Idle (P0)": "P₀ = [Σ (λ/μ)ⁿ/n! + (λ/μ)ᶜ / (c!(1-ρ))]⁻¹",
+      "Avg. in Queue (Lq)": "Lq = (P₀(λ/μ)ᶜρ) / (c!(1-ρ)²)",
+      "Time in Queue (Wq)": "Wq = Lq / λ",
+      "Time in System (W)": "W = Wq + 1/μ",
+      "Avg. Customers (L)": "L = λ * W"
+    },
+    MG1: {
+      "Formula Type": "Pollaczek-Khinchine (P-K)",
+      "Traffic Intensity (ρ)": "ρ = λ / μ",
+      "Avg. in Queue (Lq)": "Lq = (λ²σ² + ρ²) / (2(1-ρ))",
+      "Time in Queue (Wq)": "Wq = Lq / λ",
+      "Time in System (W)": "W = Wq + 1/μ",
+      "Avg. Customers (L)": "L = λ * W"
+    },
+    MGC: {
+      "Formula Type": "Kingman's Approximation",
+      "Traffic Intensity (ρ)": "ρ = λ / (c * μ)",
+      "Time in Queue (Wq)": "Wq(M/G/c) ≈ Wq(M/M/c) * (1 + Cₛ²)/2",
+      "Variation Coeff (Cs)": "Cₛ = σ / (1/μ)",
+      "Time in System (W)": "W = Wq + 1/μ",
+      "Avg. Customers (L)": "L = λ * W"
+    }
+  };
+  return models[form.modelType];
+});
 
 const calculatePerformance = () => {
   const { lambda, mu, servers, modelType, sigma } = form;
